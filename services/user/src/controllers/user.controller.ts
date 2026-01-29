@@ -34,7 +34,7 @@ export const myProfile = TryCatch( async (req: AuthenticatedRequest, res) => {
     res.json({
         user
     });
-})
+});
 
 export const getUserProfile = TryCatch( async (req, res) => {
     const user = await User.findById(req.params.id);
@@ -49,4 +49,26 @@ export const getUserProfile = TryCatch( async (req, res) => {
     res.status(200).json({
         user: user,
     });
-})
+});
+
+export const updateUser = TryCatch( async (req: AuthenticatedRequest, res) => {
+    const { name, instagram, facebook, linkedIn, bio } = req.body;
+
+    const user = await User.findByIdAndUpdate(req.user?._id, {
+        name,
+        instagram,
+        facebook,
+        linkedIn,
+        bio
+    }, { new: true });
+
+    const token = jwt.sign({ user }, process.env.JWT_SECRET as string, {
+        expiresIn: '5d'
+    });
+
+    res.status(200).json({
+        message: "user updated",
+        token,
+        user
+    });
+});

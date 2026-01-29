@@ -28,11 +28,25 @@ export const loginUser = TryCatch( async (req, res) => {
     });
 });
 
-
 export const myProfile = TryCatch( async (req: AuthenticatedRequest, res) => {
     const user = req.user;
 
     res.json({
         user
+    });
+})
+
+export const getUserProfile = TryCatch( async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+        res.status(404).json({
+            message: "user not found"
+        });
+        return;
+    }
+
+    res.status(200).json({
+        user: user,
     });
 })

@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
 interface IUser extends Document {
+    _id: string;
     name: string;
     email: string;
     image: string;

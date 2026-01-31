@@ -94,3 +94,32 @@ export const updateBlog = TryCatch ( async (req: AuthenticatedRequest, res) => {
   });
   return;
 })
+
+export const deleteBlog = TryCatch( async (req: AuthenticatedRequest, res) => {
+  const { id } = req.params;
+
+  const blog = await sql `SELECT * FROM blogs WHERE id = ${id}`;
+
+  if (!blog.length) {
+    res.status(404).json({
+      message: "No blog found"
+    });
+    return;
+  }
+
+  if (blog[0]?.author !== req.user?._id) {
+    res.status(401).json({
+      message: "You are not authorized to update the blog"
+    });
+    return;
+  }
+
+  await sql `DELETE FROM saved_blogs WHERE blogId = ${req.params.id}`;
+  await sql `DELETE FROM comments WHERE blogId = ${req.params.id}`;
+  await sql `DELETE FROM blogs WHERE id = ${req.params.id}`;
+
+  res.status(200).json({
+    message: "Blog deleted successfully"
+  });
+  return;
+})

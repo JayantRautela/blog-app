@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { sql } from "./utils/db.js";
 dotenv.config();
+import blogRoutes from "./routes/blogs.route.js";
 
 const app: Express = express();
 
@@ -48,6 +49,8 @@ async function dbInit() {
     console.log("Init DB :- ", error);
   }
 }
+
+app.use('/api/v1', blogRoutes);
 
 dbInit().then(() => {
   app.listen(PORT, () => {

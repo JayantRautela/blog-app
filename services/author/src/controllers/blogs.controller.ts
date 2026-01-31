@@ -37,3 +37,60 @@ export const createBlog = TryCatch( async (req: AuthenticatedRequest, res) => {
   });
   return;
 })
+
+export const updateBlog = TryCatch ( async (req: AuthenticatedRequest, res) => {
+  const { id } = req.params;
+  const { title, description, blogContent, category } = req.body;
+  const file = req.file;
+
+  const blog = await sql `SELECT * FROM blogs WHERE id = ${id}`;
+
+  if (!blog.length) {
+    res.status(404).json({
+      message: "No blog found"
+    });
+    return;
+  }
+
+  if (blog[0]?.author !== req.user?._id) {
+    res.status(401).json({
+      message: "You are not authorized to update the blog"
+    });
+    return;
+  }
+
+  let imageUrl = blog[0]?.image;
+
+  if (file) {
+    const fileBuffer = getBuffer(file);
+
+    if (!fileBuffer || !fileBuffer.content) {
+      res.status(400).json({
+        message: "Failed to generate file bufer"
+      });
+      return;
+    }
+
+    const cloud = await cloudinary.uploader.upload(fileBuffer.content, {
+      folder: "blogs"
+    });
+
+    imageUrl = cloud.secure_url;
+  }
+
+  const updatedBlog = await sql `UPDATE blogs SET
+    title = ${title || blog[0]?.title},
+    description = ${description || blog[0]?.description},
+    image = ${imageUrl},
+    blogContent = ${blogContent || blog[0]?.blogContent},
+    category = ${category || blog[0]?.category}
+    WHERE  id = ${id}
+    RETURNING *;
+  `;
+
+  res.status(201).json({
+    message: "Blog updated successfully",
+    blog: updatedBlog[0]
+  });
+  return;
+})

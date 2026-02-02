@@ -1,3 +1,4 @@
+import axios from "axios";
 import { sql } from "../utils/db.js";
 import TryCatch from "../utils/TryCatch.js";
 
@@ -21,7 +22,10 @@ export const getAllBlogs = TryCatch( async (req, res) => {
 export const getSingleBlog = TryCatch( async (req, res) => {
   const blog = await sql `SELECT * FROM blogs WHERE id = ${req.params.id}`;
 
+  const { data } = await axios.get(`${process.env.USER_SERVICE_URL}/api/v1/user/${blog[0]?.author}`); 
+
   res.status(200).json({
-    blog
+    blog: blog[0],
+    author: data
   });
 })

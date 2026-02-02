@@ -5,6 +5,7 @@ dotenv.config();
 import connectDB from "./utils/db.js";
 import userRoutes from "./routes/user.route.js";
 import cloudinary from "cloudinary";
+import cors from "cors";
 
 cloudinary.v2.config({
     cloud_name: process.env.CLOUD_NAME!,
@@ -15,6 +16,7 @@ cloudinary.v2.config({
 const app: Express = express();
 
 app.use(express.json());
+app.use(cors());
 
 connectDB();
 

@@ -32,6 +32,8 @@ export const createBlog = TryCatch( async (req: AuthenticatedRequest, res) => {
     INSERT INTO blogs (title, description, image, blogContent, category, author) VALUES (${title}, ${description}, ${cloud.secure_url}, ${blogContent}, ${category}, ${req.user?._id}) RETURNING *;
   `;
 
+  await invalidateCacheJob(["blogs:*"]);
+
   res.status(201).json({
     message : "Blog created",
     blog: result[0]
@@ -45,8 +47,6 @@ export const updateBlog = TryCatch ( async (req: AuthenticatedRequest, res) => {
   const file = req.file;
 
   const blog = await sql `SELECT * FROM blogs WHERE id = ${id}`;
-
-  await invalidateCacheJob(["blogs:*"]);
 
   if (!blog.length) {
     res.status(404).json({
@@ -91,6 +91,8 @@ export const updateBlog = TryCatch ( async (req: AuthenticatedRequest, res) => {
     RETURNING *;
   `;
 
+  await invalidateCacheJob(["blogs:*", `blog:${id}`]);
+
   res.status(201).json({
     message: "Blog updated successfully",
     blog: updatedBlog[0]
@@ -117,9 +119,11 @@ export const deleteBlog = TryCatch( async (req: AuthenticatedRequest, res) => {
     return;
   }
 
-  await sql `DELETE FROM saved_blogs WHERE blogId = ${req.params.id}`;
-  await sql `DELETE FROM comments WHERE blogId = ${req.params.id}`;
-  await sql `DELETE FROM blogs WHERE id = ${req.params.id}`;
+  await sql `DELETE FROM saved_blogs WHERE blogId = ${id}`;
+  await sql `DELETE FROM comments WHERE blogId = ${id}`;
+  await sql `DELETE FROM blogs WHERE id = ${id}`;
+
+  await invalidateCacheJob(["blogs:*", `blog:${id}`]);
 
   res.status(200).json({
     message: "Blog deleted successfully"

@@ -3,9 +3,12 @@ import dotenv from "dotenv";
 dotenv.config();
 import blogRouter from "./routes/blog.route.js";
 import { redisClient } from "./utils/redis.js";
+import { startCacheConsumer } from "./utils/consumer.js";
 
 const app = express();
 app.use(express.json());
+
+startCacheConsumer();
 
 redisClient
   .connect()

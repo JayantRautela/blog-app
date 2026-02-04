@@ -1,6 +1,7 @@
 import type { AuthenticatedRequest } from "../middleware/isAuth.js";
 import getBuffer from "../utils/dataUri.js";
 import { sql } from "../utils/db.js";
+import { invalidateCacheJob } from "../utils/rabitmq.js";
 import TryCatch from "../utils/TryCatch.js";
 import { v2 as cloudinary } from "cloudinary";
 export const createBlog = TryCatch( async (req: AuthenticatedRequest, res) => {
@@ -44,6 +45,8 @@ export const updateBlog = TryCatch ( async (req: AuthenticatedRequest, res) => {
   const file = req.file;
 
   const blog = await sql `SELECT * FROM blogs WHERE id = ${id}`;
+
+  await invalidateCacheJob(["blogs:*"]);
 
   if (!blog.length) {
     res.status(404).json({

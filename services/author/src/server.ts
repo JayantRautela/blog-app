@@ -6,6 +6,7 @@ dotenv.config();
 import blogRoutes from "./routes/blogs.route.js";
 import cloudinary from "cloudinary";
 import { connectRabbitMQ } from "./utils/rabitmq.js";
+import cors from "cors";
 
 cloudinary.v2.config({
     cloud_name: process.env.CLOUD_NAME!,
@@ -14,6 +15,9 @@ cloudinary.v2.config({
 });
 
 const app: Express = express();
+
+app.use(express.json());
+app.use(cors());
 
 connectRabbitMQ();
 

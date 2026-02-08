@@ -11,6 +11,7 @@
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@hookform/resolvers": "^5.2.2",
+    "@react-oauth/google": "^0.13.4",
     "axios": "^1.13.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -27,6 +28,7 @@
     "react-day-picker": "^9.13.1",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "react-hot-toast": "^2.6.0",
     "react-resizable-panels": "^4.6.2",
     "recharts": "^2.15.4",
     "sonner": "^2.0.7",

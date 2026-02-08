@@ -2,6 +2,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { Toaster } from "react-hot-toast";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export const user_service = "http://localhost:5000";
 export const blog_service = "http://localhost:5001";
@@ -68,7 +70,12 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
   
-  return <AppContext.Provider value={{ user }}>{children}</AppContext.Provider>
+  return <AppContext.Provider value={{ user }}>
+      <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
+        {children} 
+        <Toaster />
+      </GoogleOAuthProvider>
+    </AppContext.Provider>
 }
 
 export const useAppData = (): AppContextType => {

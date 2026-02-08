@@ -1,3 +1,4 @@
+'use client';
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import {
@@ -7,8 +8,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import axios from 'axios'
+import { user_service } from '@/context/AppContext'
+import Cookies from 'js-cookie'
+import toast from 'react-hot-toast'
+import { useGoogleLogin } from "@react-oauth/google";
 
-const page = () => {
+const LoginPage = () => {
+  const googleResponse = async (authResult: any) => {
+    try {
+      const result = await axios.post(`${user_service}/api/v1/login`, {
+        code: authResult["code"]
+      });
+
+      Cookies.set("token", result.data.token, {
+        expires: 5,
+        secure: true,
+        path: '/'
+      });
+
+      toast.success(result.data.message);
+    } catch (error) {
+      console.log("error :- ", error);
+      toast.error("Problem while logining in");
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: googleResponse,
+    onError: googleResponse,
+    flow: "auth-code"
+  });
+
   return (
     <div className='w-87.5 mx-auto mt-50'>
       <Card className="w-full max-w-sm text-center">
@@ -19,7 +50,7 @@ const page = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button>
+        <Button onClick={googleLogin}>
           Login With Google
         </Button>
       </CardContent>
@@ -28,4 +59,4 @@ const page = () => {
   )
 }
 
-export default page
+export default LoginPage

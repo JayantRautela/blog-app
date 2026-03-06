@@ -1,9 +1,13 @@
+'use client';
+import Loading from '@/components/loading';
+import { useAppData } from '@/context/AppContext'
 import React from 'react'
 
 const Home = () => {
+  const { loading } = useAppData();
   return (
     <div>
-      Home
+      {loading ? <Loading /> : "Home"}
     </div>
   )
 }

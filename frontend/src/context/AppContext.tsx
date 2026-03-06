@@ -36,6 +36,7 @@ interface AppContextType {
   user: User | null;
   loading: boolean;
   isAuth: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -74,7 +75,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
   
-  return <AppContext.Provider value={{ user, setIsAuth, setLoading, loading, isAuth }}>
+  return <AppContext.Provider value={{ user, setIsAuth, setLoading, loading, isAuth, setUser }}>
       <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
         {children} 
         <Toaster />

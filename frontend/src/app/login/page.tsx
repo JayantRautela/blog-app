@@ -16,9 +16,10 @@ import { redirect } from "next/navigation";
 import Loading from "@/components/loading";
 
 const LoginPage = () => {
-  const { isAuth, user, setIsAuth, setLoading, loading } = useAppData();
+  const { isAuth, user, setIsAuth, setLoading, loading, setUser } = useAppData();
 
   const googleResponse = async (authResult: any) => {
+    setLoading(true);
     try {
       const result = await axios.post(`${user_service}/api/v1/login`, {
         code: authResult["code"],
@@ -31,7 +32,11 @@ const LoginPage = () => {
       });
 
       toast.success(result.data.message);
+      setIsAuth(true);
+      setLoading(false);
+      setUser(result.data.user);
     } catch (error) {
+      setLoading(false);
       console.log("error :- ", error);
       toast.error("Problem while logining in");
     }

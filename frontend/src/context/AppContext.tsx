@@ -33,7 +33,11 @@ export interface Blog {
 }
 
 interface AppContextType {
-  user: User | null
+  user: User | null;
+  loading: boolean;
+  isAuth: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -45,7 +49,7 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuth, setIsAuth] = useState(false);
-  const [loadConfig, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
     try {
@@ -70,7 +74,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
   
-  return <AppContext.Provider value={{ user }}>
+  return <AppContext.Provider value={{ user, setIsAuth, setLoading, loading, isAuth }}>
       <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
         {children} 
         <Toaster />

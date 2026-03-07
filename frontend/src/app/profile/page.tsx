@@ -18,10 +18,10 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 const Profile = () => {
-  const { user, setUser } = useAppData();
+  const { user, setUser, logoutUser } = useAppData();
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -34,6 +34,12 @@ const Profile = () => {
     linkedin: user?.linkedIn || "",
     bio: user?.bio || "",
   });
+
+  if (!user) return redirect("/login");
+
+  const logoutHandler = () => {
+    logoutUser();
+  }
 
   const clickHandler = () => {
     inputRef.current?.click();
@@ -170,14 +176,14 @@ const Profile = () => {
               </div>
 
               <div className="flex flex-col md:flex-row gap-2 mt-6 w-full justify-center">
-                <Button>Logout</Button>
-                <Button>Add Blog</Button>
+                <Button onClick={logoutHandler}>Logout</Button>
+                <Button onClick={() => router.push("/blog/new")}>Add Blog</Button>
 
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant={"outline"}>Edit</Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
+                  <DialogContent className="sm:max-w-125">
                     <DialogHeader>
                       <DialogTitle>Edit Profile</DialogTitle>
                     </DialogHeader>

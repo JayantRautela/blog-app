@@ -19,6 +19,7 @@ export interface User {
   bio: string;
   facebook: string;
   x: string;
+  image: string
 }
 
 export interface Blog {

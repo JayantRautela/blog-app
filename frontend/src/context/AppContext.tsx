@@ -9,6 +9,26 @@ export const user_service = "http://localhost:5000";
 export const blog_service = "http://localhost:5001";
 export const author_service = "http://localhost:5002";
 
+export const blogCategories = [
+  "Techonlogy",
+  "Health",
+  "Finance",
+  "Travel",
+  "Education",
+  "Entertainment",
+  "Study",
+];
+
+export interface Blog {
+  id: string;
+  title: string;
+  description: string;
+  blogcontent: string;
+  image: string;
+  category: string;
+  author: string;
+  created_at: string;
+}
 
 export interface User {
   _id: string;
@@ -40,7 +60,13 @@ interface AppContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
-  logoutUser: () => Promise<void>; 
+  logoutUser: () => Promise<void>;
+  blogs: Blog[] | null;
+  blogLoading: boolean;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  searchQuery: string;
+  fetchBlogs: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -53,6 +79,26 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [blogLoading, setBlogLoading] = useState(true);
+
+  const [blogs, setBlogs] = useState<Blog[] | null>(null);
+  const [category, setCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  async function fetchBlogs() {
+    setBlogLoading(true);
+    try {
+      const { data } = await axios.get(
+        `${blog_service}/api/v1/blog/all?searchQuery=${searchQuery}&category=${category}`
+      );
+
+      setBlogs(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setBlogLoading(false);
+    }
+  }
 
   const fetchUser = async () => {
     try {
@@ -84,7 +130,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     fetchUser();
   }, []);
   
-  return <AppContext.Provider value={{ user, setIsAuth, setLoading, loading, isAuth, setUser, logoutUser }}>
+  return <AppContext.Provider value={{ user, setIsAuth, setLoading, loading, isAuth, setUser, logoutUser, blogs, blogLoading, setCategory, setSearchQuery, searchQuery, fetchBlogs, }}>
       <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
         {children} 
         <Toaster />
